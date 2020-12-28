@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8" />
+        <title> SecShare </title>
+        <link rel="icon" href="tag.jpg" sizes="32 * 32">
+
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <style>
+            body {
+                background-image: linear-gradient( 111.5deg,  rgba(228,247,255,1) 21.9%, rgba(255,216,194,1) 92.2% );
+            }
+            #ad-container {
+                top: 0;
+                height: 10%;
+                background-image: linear-gradient( 109.6deg,  rgba(156,252,248,1) 11.2%, rgba(110,123,251,1) 91.1% );
+            }
+            #ad-container > #ad-item2 {
+                font-family: HGHT1_CNKI, "华光行楷_CNKI", Helvetica, Arial, sans-serif;
+                font-size: xxx-large; 
+                margin-left: 10%;
+                font-weight: bolder;
+            }
+            #form-container {
+                position: absolute;
+                margin-top: 7%;
+                margin-left: 30%;
+                height: 40%;
+                width: 40%;
+                border-radius: 5%;
+                background-color:whitesmoke
+            }
+            #form-container > form {
+                width: 80%;
+                margin-left: 10%;
+                font-family: "隶书","华文新魏",  "楷体", "微软雅黑";
+            }
+            #share-btn {
+                margin-left: 80%;
+                width: 20%;
+                margin-top: 8%;
+            }
+            #form-container > #index-link {
+                font-family: "华文新魏", "隶书", "楷体", "微软雅黑";
+                font-size: large;
+                margin-left: 70%;
+            }
+            #message-container {
+                position: absolute;
+                margin-top: 1%;
+                height: 10%;
+                width: 0%;
+                margin-left: 35%;
+                background-color: rgba(0, 0, 0, 0.5);
+                border-radius: 20px 20px;
+                text-align: center;
+                font-family: "隶书", "华文新魏", "楷体", "微软雅黑";
+                font-size: x-large;
+                color: orange;
+                transition: width .25s;
+            }
+        </style>
+
+        <script>
+            window.onload = function() {
+                let shareBtn = document.getElementById("share-btn");
+                let code = document.getElementById("share-code");
+                let messageContainer = document.getElementById("message-container");
+                let messageText = document.getElementById("message-text");
+                
+                shareBtn.onclick = function() {
+                    if (code.value == null || code.value == "")
+                    {
+                        messageText.innerHTML = "请输入提取码";
+                        messageContainer.style.width = "30%";
+                        setTimeout(function() {
+                            messageContainer.style.width = "0%";
+                            messageText.innerHTML = "";
+                        } , 1500)
+                        return false;
+                    }
+                    return true;
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="ad-container">
+            <div id="ad-item2">Secure NetDisk</div> 
+        </div>
+        <div id="form-container">
+            <form action="" method="POST" id="find-password">
+                 {% if message %}
+                         <div class="alert alert-warning">{{ message }}</div>
+                    {% endif %}
+                    {% csrf_token %}
+                <h3 class="form-title center-block">
+                    <span class="glyphicon glyphicon-envelope"></span>
+                    来自 {{ owner }} 的分享
+                </h3>
+                <hr />
+                <div class="form-group">
+                        {{ sharefile_form.code.label_tag }}
+                        {{ sharefile_form.code}}
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-info" id="share-btn">
+                        提取
+                    </button>
+                    <hr />
+                </div>
+            </form>    
+            
+        </div>
+    </body>
+</html>

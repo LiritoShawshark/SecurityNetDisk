@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8" />
+        <title> SecFindPassword </title>
+        <link rel="icon" href="tag.jpg" sizes="32 * 32">
+
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <style>
+            body {
+                background-color: seashell;
+            }
+            #ad-container {
+                top: 0;
+                height: 10%;
+                background-image: linear-gradient( 109.6deg,  rgba(156,252,248,1) 11.2%, rgba(110,123,251,1) 91.1% );
+            }
+            #ad-container > #ad-item2 {
+                font-family: HGHT1_CNKI, "华光行楷_CNKI", Helvetica, Arial, sans-serif;
+                font-size: xxx-large; 
+                margin-left: 10%;
+                font-weight: bolder;
+            }
+            #form-container {
+                position: absolute;
+                margin-top: 7%;
+                margin-left: 30%;
+                height: 55%;
+                width: 40%;
+                border-radius: 5%;
+                background-color:whitesmoke
+            }
+            #form-container > form {
+                width: 80%;
+                margin-left: 10%;
+                font-family: "隶书","华文新魏",  "楷体", "微软雅黑";
+            }
+            #find-btn {
+                margin-left: 70%;
+                width: 30%;
+                margin-top: 8%;
+            }
+            #form-container > #index-link {
+                font-family: "华文新魏", "隶书", "楷体", "微软雅黑";
+                font-size: large;
+                margin-left: 70%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="ad-container">
+            <div id="ad-item2">Secure NetDisk</div> 
+        </div>
+
+        <div id="form-container">
+                <form action="/forget/" method="POST" id="forget">
+                     {% if message %}
+                         <div class="alert alert-warning">{{ message }}</div>
+                    {% endif %}
+                    {% csrf_token %}
+
+                    <h3 class="form-title center-block">找回密码</h3>
+                    <hr />
+                    <div class="form-group">
+                        {{ forget_form.username.label_tag }}
+                        {{ forget_form.username}}
+                    </div>
+                     <div class="form-group">
+                        {{ forget_form.email.label_tag }}
+                        {{ forget_form.email }}
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-info" id="find-btn">
+                            下一步
+                        </button>
+                    <hr />
+                    </div>
+                </form>
+            <a href="/login/" id="index-link">回到首页</a>
+        </div>
+    </body>
+</html>

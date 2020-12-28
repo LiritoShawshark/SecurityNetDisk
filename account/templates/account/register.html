@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8" />
+        <title> SecRegister </title>
+        <link rel="icon" href="tag.jpg" sizes="32 * 32">
+
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <style>
+            body {
+                background-image: url({% static 'account/image/reg-img2.png' %});
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
+            #ad-container {
+                margin-top: 30%;
+                margin-left: 5%;
+                position: absolute;
+                color: whitesmoke;
+                border-radius: 20%;
+            }
+            #ad-container > #ad-item1 {
+                font-family: "华光行楷_CNKI", "楷体", "微软雅黑";
+                font-size: xx-large;
+                font-weight: bolder;
+            }
+            #ad-container > #ad-item2 {
+                font-family: HGHT1_CNKI, "华光行楷_CNKI", Helvetica, Arial, sans-serif;
+                font-size: xxx-large;
+                margin-left: 30px;
+                font-weight: bolder;
+            }
+            #form-container {
+                position: absolute;
+                margin-top: 10%;
+                margin-left: 65%;
+                height: 70%;
+                width: 24%;
+                border-radius: 5%;
+                background-color: rgba(255, 255, 255, 0.8);
+            }
+            #form-container > form {
+                width: 80%;
+                margin-left: 10%;
+                font-family: "隶书","华文新魏",  "楷体", "微软雅黑";
+            }
+            #register-btn {
+                margin-left: 70%;
+                width: 30%;
+                margin-top: 8%;
+            }
+            #message-box {
+                display: none;
+                position: absolute;
+                margin-top: 20%;
+                margin-left: 30%;
+                width: 25%;
+                height: 15%;
+                border-radius: 5%;
+                background-color: rgba(0, 0, 0, 0.7);
+            }
+            #message-box > #message-text {
+                font-family: "华文新魏", "隶书", "楷体", "微软雅黑";
+                font-size: xx-large;
+                color: orange;
+                text-align: center;
+            }
+            #form-container > #index-link {
+                font-family: "华文新魏", "隶书", "楷体", "微软雅黑";
+                font-size: large;
+                margin-left: 50%;
+            }
+        </style>
+
+        <script>
+            window.onload = function() {
+                let uname = document.getElementById("uname");
+                let pwd = document.getElementById("pwd");
+                let pwd2 = document.getElementById("pwd2");
+                let email = document.getElementById("email");
+                let btn = document.getElementById("register-btn");
+                let reg = /\w{6,}/; /* 此正则表达式匹配四位以上的字母、数字、下划线串 */
+                let messageBox = document.getElementById("message-box");
+                let messageText = document.getElementById("message-text");
+                /* 使用messageText.innerHTML修改显示的提示内容
+                    改变messageBox的display属性显示提示
+                */
+                btn.onclick = function() {
+                    if (uname.value == "")
+                    {
+                        messageText.innerHTML = "请输入用户名";
+                        messageBox.style.display = "block";
+                        uname.focus();
+                        setTimeout(messageFade, 2000);
+                        return false;
+                    }
+                    else if (pwd.value != pwd2.value)
+                    {
+                        messageText.innerHTML = "两次输入的密码不一致";
+                        messageBox.style.display = "block";
+                        pwd2.focus();
+                        setTimeout(messageFade, 2000);
+                        return false;
+                    }
+                    else if (! reg.test(pwd.value))
+                    {
+                        messageText.innerHTML = "密码格式：六位以上的包含字母、数字、下划线的字符串";
+                        messageBox.style.display = "block";
+                        pwd.focus();
+                        setTimeout(messageFade, 4000);
+                        return false;
+                    }
+                    else if (email.value == "")
+                    {
+                        messageText.innerHTML = "请输入邮箱";
+                        messageBox.style.display = "block";
+                        email.focus();
+                        setTimeout(messageFade, 2000);
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+
+                function messageFade() {
+                    messageBox.style.display = "none";
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div id="ad-container">
+                <div id="ad-item1">
+                    雲
+                </div>
+                <div id="ad-item2">
+                    Secure NetDisk
+                </div>
+            </div>
+
+            <div id="form-container">
+                <form action="/register/" method="POST" id="register">
+                     {% if message %}
+                         <div class="alert alert-warning">{{ message }}</div>
+                    {% endif %}
+                    {% csrf_token %}
+
+                    <h3 class="form-title center-block">注册你的账号</h3>
+                    <hr />
+                    <div class="form-group">
+                        {{ register_form.username.label_tag }}
+                        {{ register_form.username}}
+                    </div>
+                    <div class="form-group">
+                        {{ register_form.password1.label_tag }}
+                        {{ register_form.password1 }}
+                    </div>
+                    <div class="form-group">
+                        {{ register_form.password2.label_tag }}
+                        {{ register_form.password2 }}
+                    </div>
+                    <div class="form-group">
+                        {{ register_form.email.label_tag }}
+                        {{ register_form.email }}
+                    </div>
+                    <div class="form-group">
+                        {{ register_form.sex.label_tag }}
+                        {{ register_form.sex }}
+                    </div>
+
+
+                   <!-- <div class="form-group">
+                        <label for="uname">用户名</label>
+                        <input type="text" class="form-control" placeholder="用户名"
+                        name="username" id="uname" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pwd">密码</label>
+                        <input type="password" class="form-control" placeholder="输入你的密码"
+                        name="password1" id="pwd" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pwd2">确认密码</label>
+                        <input type="password" class="form-control" placeholder="确认密码"
+                         name="password2" id="pwd2" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" class="form-control" placeholder="E.G: 123@123.com"
+                        name="email" id="email" />
+                    </div> -->
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-info" id="register-btn">
+                            注册
+                        </button>
+                        <hr />
+                    </div>
+                </form>
+                <a href="/login/" id="index-link">已有账号？前往登录</a>
+            </div>
+
+            <div id="message-box">
+                <h3 id="message-text"> Message </h3>
+            </div>
+        </div>
+    </body>
+</html>

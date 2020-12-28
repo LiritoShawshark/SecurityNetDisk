@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8" />
+        <title> SecChangePassword </title>
+        <link rel="icon" href="tag.jpg" sizes="32 * 32">
+
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <style>
+            body {
+                background-color: seashell;
+            }
+            #ad-container {
+                top: 0;
+                height: 10%;
+                background-image: linear-gradient( 109.6deg,  rgba(156,252,248,1) 11.2%, rgba(110,123,251,1) 91.1% );
+            }
+            #ad-container > #ad-item2 {
+                font-family: HGHT1_CNKI, "华光行楷_CNKI", Helvetica, Arial, sans-serif;
+                font-size: xxx-large; 
+                margin-left: 10%;
+                font-weight: bolder;
+            }
+            #form-container {
+                position: absolute;
+                margin-top: 7%;
+                margin-left: 30%;
+                height: 65%;
+                width: 40%;
+                border-radius: 5%;
+                background-color:whitesmoke
+            }
+            #form-container > form {
+                width: 80%;
+                margin-left: 10%;
+                font-family: "隶书","华文新魏",  "楷体", "微软雅黑";
+            }
+            #change-btn {
+                margin-left: 70%;
+                width: 30%;
+                margin-top: 8%;
+            }
+            #form-container > #diskhome-link {
+                font-family: "华文新魏", "隶书", "楷体", "微软雅黑";
+                font-size: large;
+                margin-left: 80%;
+            }
+            #message-container {
+                position: absolute;
+                margin-top: 1%;
+                height: 10%;
+                width: 30%;
+                margin-left: 35%;
+                background-color: rgba(0, 0, 0, 0.5);
+                border-radius: 20px 20px;
+                text-align: center;
+                font-family: "隶书", "华文新魏", "楷体", "微软雅黑";
+                font-size: x-large;
+                color: orange;
+                display: none;
+            }
+        </style>
+
+        <script> 
+            /*此JS对修改密码界面的用户输入进行检查
+            只检查新密码是否符合格式，以及邮箱是否为空
+            旧密码是否符合要求，请从后端进行检查
+            */
+            window.onload = function() {
+                let newpwd = document.getElementById("newpwd");
+                let messageContainer = document.getElementById("message-container");
+                let messageText = document.getElementById("message-text");
+                let reg = /\w{4,}/;
+                let btn = document.getElementById("change-btn");
+                let email = document.getElementById("email");
+
+                btn.onclick = function() {
+                    if (email.value == "")
+                    {
+                        messageText.innerHTML = "邮箱不能为空";
+                        messageContainer.style.display = "block";
+                        email.focus();
+                        setTimeout(messageFade, 2000);
+                        return false;
+                    }
+                    else if (! reg.test(newpwd.value))
+                    {
+                        messageText.innerHTML = "密码格式：四位以上的包含字母、数字、下划线的字符串";
+                        messageContainer.style.display = "block";
+                        newpwd.focus();
+                        setTimeout(messageFade, 4000);
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                function messageFade() {
+                    messageContainer.style.display = "none";
+                }
+            }
+
+
+        </script>
+    </head>
+
+    <body>
+        <div id="ad-container">
+            <div id="ad-item2">Secure NetDisk</div> 
+        </div>
+
+        <div id="form-container">
+             <form action="/changepwd/" method="POST" id="find-password">
+
+                    {% if message %}
+                    <div class="alert alert-warning">{{ message }}</div>
+                    {% endif %}
+                    {% csrf_token %}
+
+                    <h3 class="form-title center-block">修改密码</h3>
+                    <hr />
+                    <div class="form-group">
+                        {{ changepwd_form.password_old.label_tag }}
+                        {{ changepwd_form.password_old }}
+                    </div>
+                 <div class="form-group">
+                        {{ changepwd_form.email.label_tag }}
+                        {{ changepwd_form.email }}
+                    </div>
+                    <div class="form-group">
+                        {{ changepwd_form.password_new.label_tag }}
+                        {{ changepwd_form.password_new }}
+                    </div>
+                  <div class="form-group">
+                        {{ changepwd_form.password_new2.label_tag }}
+                        {{ changepwd_form.password_new2 }}
+                    </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-info" id="change-btn">
+                        提交
+                    </button>
+                    <hr />
+                </div>
+            </form>    
+            <a href="/index/" id="diskhome-link">返回</a>
+        </div>
+    </body>
+</html>

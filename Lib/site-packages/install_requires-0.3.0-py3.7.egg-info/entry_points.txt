@@ -1,0 +1,3 @@
+[console_scripts]
+install-requires = install_requires.cli:convert
+

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8" />
+        <title> My Disk </title>
+        <link rel="icon" href="tag.jpg" sizes="32 * 32">
+        
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcss.com/clipboard.js/1.5.15/clipboard.min.js"></script>
+
+        <style>
+            body {
+                background-image: radial-gradient( circle farthest-corner at 12.3% 19.3%,  rgba(85,88,218,1) 0%, rgba(95,209,249,1) 100.2% );
+            }
+            #header {
+                height: 10%;
+                width: 100%;
+                /*background-image: linear-gradient( 109.6deg,  rgba(218,185,252,1) 11.2%, rgba(125,89,252,1) 91.1% );*/
+            }
+            #header-logo {
+                font-family: HGHT1_CNKI, "华光行楷_CNKI", Arial, Helvetica, sans-serif;
+                font-size: xx-large;
+                font-weight: bold;
+                color: whitesmoke;
+                width: 30%;
+                margin-left: 5%;
+                position: absolute;
+                font-weight: bolder;
+            }
+            #header-user {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: x-large;
+                color: whitesmoke;
+                width: 30%;
+                margin-left: 70%;
+                padding: 1%;
+            }
+            #header-user > #change-link {
+                font-size: large;
+                font-family: "隶书","华文新魏",  "楷体", "微软雅黑";
+                margin-left: 5%;
+            }
+            #header-user > #exit-link {
+                font-size: large;
+                font-family: "隶书","华文新魏",  "楷体", "微软雅黑";
+                margin-left: 5%;
+            }
+            #change-link:hover {
+                cursor: pointer;
+            }
+            #exit-link:hover {
+                cursor: pointer;
+            }
+            #sider {
+                position: absolute;
+                height: 91%;
+                width: 13%;
+                font-family: "华光行楷_CNKI", "楷体", "微软雅黑";
+                font-size: larger;
+                color: white;
+                /*background-image: linear-gradient( 109.6deg,  rgba(218,185,252,1) 11.2%, rgba(125,89,252,1) 91.1% );*/
+                text-align: center;
+                padding-top: 1%;
+            }
+            #sider table tr td{
+                border:white 0px solid;
+            }
+            #file-all, #file-upload {
+                text-align: left;
+            }
+            #sider tr:hover {
+                cursor: pointer;
+                background-color: rgba(255, 255, 255, 0.3);
+            }
+            .sider-active {
+                background-color: rgba(0, 0, 0, 0.2);
+            }
+            #storage-status {
+                margin-top: 60%;
+            }
+            .progress {
+                width: 90%;
+                margin-left: 5%;
+                box-shadow: palegreen 3px 3px 3px;
+                height: 10px;
+            }
+            .card-container:hover {
+                cursor: pointer;
+            }
+            #storage-add1 {
+                position: absolute;
+                height: 5%;
+                width: 80%;
+                margin-top: 10%;
+                margin-left: 10%;
+                border-radius: 5%;
+                background-color: rgba(125,89,252,1);
+                backface-visibility: visible;
+                transform: rotateX(0deg);
+                -webkit-transform: rotateX(0deg);
+                transition: transform .25s ease-in-out;
+            }
+            .card-container.hover #storage-add1 {
+                transform: rotateX(180deg);
+                -webkit-transform: rotateX(180deg);
+            }
+            #storage-add2 {
+                position: absolute;
+                height: 5%;
+                width: 80%;
+                margin-top: 10%;
+                margin-left: 10%;
+                border-radius: 5%;
+                background-color: rgba(80, 36, 240, 1);
+                backface-visibility: hidden;
+                transform: rotateX(-180deg);
+                -webkit-transform: rotateX(-180deg);
+                color: gold;
+                transition: transform .25s ease-in-out;
+            }
+            .card-container:hover #storage-add2 {
+                transform: rotateX(0deg);
+                -webkit-transform: rotateX(0deg);
+            }
+            #func-bar {
+                position: absolute;
+                height: 5%;
+                width: 87%;
+                background-image: radial-gradient( circle farthest-corner at 1.3% 2.8%,  rgba(239,249,249,1) 0%, rgba(182,199,226,1) 100.2% );
+                margin-left: 13%;
+                color: azure;
+                font-family: "华光行楷_CNKI", "楷体", "微软雅黑";
+                font-size: large;
+                border-radius: 20px 20px;
+            }
+            #func-bar #search {
+                width: 20%;
+                margin-left: 70%;
+            }
+            #func-bar #search #search-btn {
+                position: absolute;
+                margin-left: 20%;
+                margin-top: -33px;
+                width: 5%
+            }
+           #main-space {
+               position: absolute;
+               width: 87%;
+               height: 85%;
+               margin-left: 13%;
+               margin-top: 2.5%;
+               background-image: radial-gradient( circle farthest-corner at 1.3% 2.8%,  rgba(239,249,249,1) 0%, rgba(182,199,226,1) 100.2% );
+               border-radius: 20px 20px;
+           }
+           #main-space #main-header {
+               width: 100%;
+               height: 5%;
+               background-color: rgba(255, 255, 255, 0.5);
+               border-radius: 20px 20px;
+               font-family: "华文新魏", "隶书", "华光行楷_CNKI", "楷体", "微软雅黑";
+               font-size: larger;
+               text-align: center;
+           }
+           #main-space #main-header #main-header-item1 {
+               position: absolute;
+               width: 40%;
+               padding-left: 5%;
+               border-right: white 2px solid;
+           }
+           #main-space #main-header #main-header-item2 {
+                position: absolute;
+                width: 20%;
+                margin-left: 40%;
+                border-right: white 2px solid;
+           }
+           #main-space #main-header #main-header-item3 {
+               position: absolute;
+               width: 20%;
+               margin-left: 60%;
+               border-right: white 2px solid;
+           }
+           #main-space #main-header #main-header-item4 {
+               position: absolute;
+               width: 20%;
+               margin-left: 80%;
+           }
+           #main-space #main-content {
+               font-family: "华文新魏", "隶书", "华光行楷_CNKI", "楷体", "微软雅黑";
+               font-size: larger;
+               text-align: center;
+           }
+           #main-space #main-content .main-content-item1 {
+               width: 40%;
+               text-align: left;
+           }
+           #main-space #main-content .main-content-item2 {
+               width: 20%;
+               
+           }
+           #main-space #main-content .main-content-item3 {
+               width: 20%;
+               
+           }
+           #main-space #main-content .main-content-item4 {
+               width: 20%;
+           }
+           #main-space #main-content .main-content-item4 #share-trigger {
+               color: white;
+           }
+           #main-space #main-content .main-content-item4 #share-trigger:hover {
+               color: gold;
+               cursor: pointer;
+           }
+           a{
+                color:white;
+           }
+           a:hover {
+               color: gold;
+           }
+           a:visited {
+               color: white;
+               text-decoration: none;
+           }
+           a:hover {
+               text-decoration: none;
+           }
+           .modal-title {
+               text-align: center;
+               font-family: "隶书", "华文新魏", '楷体', Arial, Helvetica, sans-serif;
+           }
+           #modal-content-text {
+               font-family: "隶书", "华文新魏", '楷体', Arial, Helvetica, sans-serif;
+               font-size: x-large;
+           }
+           #tip-message {
+               font-family: "隶书", "华文新魏", '楷体', Arial, Helvetica, sans-serif;
+               font-size: medium;
+               text-align: right;
+           }
+        </style>
+
+        <script>
+            function jumpTo(argv) {
+                window.location.href = argv;
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="header">
+            <div id="header-logo">Secure NetDisk</div>
+            <div id="header-user">
+                Hello,{{ request.session.user_name }}!
+                <span id="change-link"><a href="/changepwd/">|修改密码|</a></span>
+                <span id="exit-link"><a href="/logout/">|退出|</a></span>
+
+            </div>
+        </div>
+        <!-- 以上是头部信息条 -->
+        <!-- 以上是修改密码与退出登录的入口 -->
+        <div id="sider">
+            <table class="table">
+                <tr id="file-all"  onclick="jumpTo('/index/')">
+                    <td>
+                        <span class="glyphicon glyphicon-file"></span>
+                        我的文档
+                    </td>
+                </tr>
+
+                <tr id="file-jpg" onclick="jumpTo('/photo/')">
+                    <td>
+                        图片
+                    </td>
+                </tr>
+
+                <tr id="file-pdf" onclick="jumpTo('/pdf/')">
+                    <td>
+                        PDF
+                    </td>
+                </tr>
+
+                <tr id="file-txt" onclick="jumpTo('/txt/')">
+                    <td>
+                        TXT
+                    </td>
+                </tr>
+
+                <tr id="file-etc" onclick="jumpTo('/others/')"   class="sider-active">
+                    <td>
+                        其他
+                    </td>
+                </tr>
+                <tr></tr>
+            </table>
+
+            <table class="table">
+                <tr id="file-upload" onclick="jumpTo('/upload/')">
+                    <td>
+                        <span class="glyphicon glyphicon-upload"></span>
+                        上传文件
+                    </td>
+                </tr>
+            </table>
+
+        <!--    搁置的回收站计划
+            <table class="table">
+                <tr id="file-trash">
+                    <td>
+                        <span class="glyphicon glyphicon-trash"></span>
+                        回收站
+                    </td>
+                </tr>
+            </table>
+        -->
+            <div id="storage-status">
+                <p>容量使用情况</p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"  style="width:{{spaceprecent}}" >
+                      <span class="sr-only">{{ spaceprecent }} Complete</span>
+                    </div>
+                </div>
+                <span>{{ used }}/{{ max }}M</span>
+                <hr />
+                <div class="card-container" onclick="jumpTo('../add_space')">
+                    <div id="storage-add1">
+                        <p>扩个容(^_−)☆</p>
+                    </div>
+                    <div id="storage-add2">
+                        <p>扩个容(✪ω✪)</p>
+                    </div>
+                </div>
+                 
+            </div>
+        </div>
+        <!-- 以上是侧边栏 -->
+        <div id="func-bar">
+            <div id="search">
+                <form action="/search/" method="GET">
+                    <input class="form-control" type="text" name="key" id="search-input" placeholder="查找文档"/>
+                    <button type="submit" class="btn btn-info" id="search-btn">
+                        <span class="glyphicon glyphicon-send"></span>
+                    </button>
+                </form> <!-- 此表单用于查找文档 -->
+            </div>
+        </div>
+        <!-- 以上是功能条（目前只有搜索功能，预期可以将文件上传的进度放置其中 -->
+        <div id="main-space">
+            <div id="main-header">
+                <div id="main-header-item1">文件名称</div>
+                <div id="main-header-item2">大小(KB)</div>
+                <div id="main-header-item3">修改日期</div>
+                <div id="main-header-item4">操作</div>
+            </div>
+
+            <div id="main-content">
+                {% if file_infos %}
+                <table class="table">
+                    <tbody>
+                    {% for file in file_infos %}
+                    <tr>    <!-- 前两个tr中都在最后的td中定义了onclick事件，该tr没有定义（因为懒），在实际结合中都要定义。 -->
+                        <td class="main-content-item1">{{ file.f_name }}</td>
+                        <td class="main-content-item2">{{ file.f_size }}</td>
+                        <td class="main-content-item3">{{ file.upload_time }}</td>
+                        <td class="main-content-item4">
+                            <a href="{% url 'download' file.id%}"><span class="glyphicon glyphicon-save"></span></a>
+                            &nbsp;&nbsp;
+                            <a href="{% url 'delete' file.id%}"><span class="glyphicon glyphicon-remove-circle"></span></a>
+                            &nbsp; &nbsp;
+                            <span class="glyphicon glyphicon-link" id="share-trigger" data-toggle="modal" data-target="#share-modal" onclick="generateLink('{{file.id}}', '{{file.f_code}}')"></span>
+                        </td>
+                    </tr>
+                   {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+    <p>这里空空如也 ~ ╮(╯▽╰)╭</p>
+        {% endif %}
+            </div>
+            <!-- 以上是网盘页面的主要部分，用于展示文档并对其进行删除、下载操作 -->
+        </div>
+        <!-- 以上是main-container部分，包括标题main-header和文档内容main-content -->
+        <!-- 分享模态框 -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="share-modal">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">将此文件分享给你的朋友</h4>
+                </div>
+                <div class="modal-body">
+                <!-- 在此处放置需要复制的链接和提取码 -->
+                    <p id="modal-content-text">
+                    </p>
+                    <hr />
+                    <p id="tip-message">
+                        选中上方内容，然后点击复制                          
+                    </p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" onclick="copyModalText()" id="copy-btn">复制</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+          <script>
+              function generateLink(argv1, argv2) { // 每次点击分享按钮，触发此事件，将模态框内容修改成与文件唯一对应的链接。
+                  document.getElementById("modal-content-text").innerHTML = "https://47.93.246.14:8000/share/" + argv1 + "<br/>" + "提取码：" + argv2;
+              }
+             function copyModalText() {
+                let selectedText = window.getSelection().toString();
+                if (selectedText == null || selectedText == "") {
+                    document.getElementById("tip-message").innerHTML = "请选中上面的内容o(╥﹏╥)o"
+                    setTimeout(function() {
+                        document.getElementById("tip-message").innerHTML = "选中上方内容，然后点击复制"
+                    }, 1500);
+                    return false;
+                } 
+                // 执行复制方法， 该方法返回bool类型的结果，告诉我们是否复制成功
+                const copyResult = document.execCommand('copy')
+
+                // 根据返回的复制结果 给用户不同的提示
+                if (copyResult) {
+                    document.getElementById("tip-message").innerHTML = "复制成功"
+                    setTimeout(function() {
+                        document.getElementById("tip-message").innerHTML = "选中上方内容，然后点击复制"
+                    }, 2000);
+                }
+                else {
+                    document.getElementById("tip-message").innerHTML = "出了点问题∑(っ°Д°;)っ请重新复制"
+                    setTimeout(function() {
+                        document.getElementById("tip-message").innerHTML = "选中上方内容，然后点击复制"
+                    }, 2000);
+                }
+             }
+             
+          </script>
+    </body>
+</html>

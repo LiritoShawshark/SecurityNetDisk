@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8" />
+        <title> SecChangePassword </title>
+        <link rel="icon" href="tag.jpg" sizes="32 * 32">
+
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <style>
+            body {
+                background-image: linear-gradient( 111.5deg,  rgba(228,247,255,1) 21.9%, rgba(255,216,194,1) 92.2% );
+            }
+            #ad-container {
+                top: 0;
+                height: 10%;
+                background-image: linear-gradient( 109.6deg,  rgba(156,252,248,1) 11.2%, rgba(110,123,251,1) 91.1% );
+            }
+            #ad-container > #ad-item2 {
+                font-family: HGHT1_CNKI, "华光行楷_CNKI", Helvetica, Arial, sans-serif;
+                font-size: xxx-large; 
+                margin-left: 10%;
+                font-weight: bolder;
+            }
+            #form-container {
+                position: absolute;
+                height: 50%;
+                width: 30%;
+                margin-top: 5%;
+                margin-left: 20%;
+                padding-left: 1%;
+                padding-right: 1%;
+                padding-top: 1%;
+                color: whitesmoke;
+                font-family: "隶书", "华文新魏", "楷体", "微软雅黑";
+                font-size: x-large;
+                background-color: rgba(0, 0, 0, 0.7);
+                border-radius: 20px 20px;
+            }
+            #form-container #upload-btn {
+                margin-left: 30%;
+            }
+            #form-container #selected-info {
+                display: none;
+                font-size: large;
+            }
+            #status-container {
+                position: absolute;
+                height: 50%;
+                width: 30%;
+                margin-top: 5%;
+                margin-left: 55%;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: whitesmoke;
+                font-family: "隶书", "华文新魏", "楷体", "微软雅黑";
+                font-size: large;
+                padding-left: 1%;
+                padding-right: 1%;
+                padding-top: 1%;
+                border-radius: 20px 20px;
+            }
+            #status-container .progress {
+                height: 15px;
+                border-radius: 10px 10px;
+            }
+            #upload-progress {
+                display: none;
+
+            }
+            #stop-cancel {
+                margin-left: 80%;
+            }
+            #stop-cancel span:hover {
+                cursor: pointer;
+                color: goldenrod;
+            }
+            #success-box {
+                text-align: center;
+                display: none;
+            }
+            #success-box span:hover {
+                cursor: pointer;
+                color: greenyellow;
+            }
+        </style>
+
+        <script> 
+
+            let stop = 0;
+
+            function startUpload() {
+                /* 获取文件对象，获取文件上传进度条,获取文件上传进度文字 */
+                let file = document.getElementById("file-input").files[0];
+                let uploadProgressBar = document.getElementById("upload-progress-bar"); 
+                let progressPercent = document.getElementById("progress-percent");
+                let uploadProgress = document.getElementById("upload-progress");
+
+                if (stop == 1)
+                {
+                    return false;
+                }
+                if (file) {
+                    uploadProgress.style.display = "block"; // 文件存在，展示进度
+
+                    let filesize = file.size;
+                    let sliceSize = 500 * 1024;
+                    let fileCount = filesize / sliceSize;
+                    let i = getCookie(file.name);
+                    var blobfile;
+
+                    i = (i != null && i != "") ? parseInt(i) : 0;
+                    if (Math.floor(fileCount) < i) {
+                        alert("已经完成");
+                        uploadProgressBar.style.width = "100%";
+                        progressPercent.innerHTML = "100%";
+                        document.getElementById("success-box").style.display = "block";
+                        return false;
+                    }
+                    else {
+                        // alert("filesize" + filesize + "fileCoune" + fileCount);
+                        // alert(i);
+                        let nowPercent = parseInt(i) * 100 / Math.ceil(fileCount);
+                        uploadProgressBar.style.width = nowPercent + "%";
+                        progressPercent.innerHTML = nowPercent + "%";
+                    }
+                    var xhr = new XMLHttpRequest();
+                    var formData = new FormData();
+
+                    var last = -1;
+
+                    if ((filesize - i * sliceSize) > sliceSize) {
+                        blobfile = file.slice(i * sliceSize, (i + 1) * sliceSize);
+                    }
+                    else {
+                        blobfile = file.slice(i * sliceSize, filesize);
+                        last = Math.floor(fileCount);
+                        formData.append('lastone', last);
+                    }
+                    formData.append('file', blobfile);
+                    formData.append('blobname', i);
+                    formData.append('filename', file.name);
+
+                    let cs = document.getElementsByTagName('input')[1];
+                    formData.append('csrfmiddlewaretoken', cs.value);
+
+                    xhr.open('POST', '/upload/');//需要改成指向/upload/的url
+                    xhr.send(formData);
+
+                    document.getElementById("play-pause").classList.remove("glyphicon-play");
+                    document.getElementById("play-pause").classList.add("glyphicon-pause");
+
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            console.log(xhr.responseText);
+                            if (i < fileCount) {
+                                startUpload();
+                            }
+                            else {  // 只有整个函数结束的时候，才会有statechange，于是当最后一个包发出并被接收之后，进入此分支，需要将进度条拉满，否则会出现卡条
+                                uploadProgressBar.style.width = "100%";
+                                progressPercent.innerHTML = "100%";
+                                stop = 1;
+                                document.getElementById("play-pause").classList.remove("glyphicon-pause");
+                                document.getElementById("play-pause").classList.add("glyphicon-play");
+                                i = 0;
+                                document.getElementById("success-box").style.display = "block";
+                            }
+                        }
+                    };
+                    xhr.timeout = 20000;
+                    xhr.ontimeout = function(event){
+                　　　alert('请求超时，网络拥堵！低于25K/s');
+                　 }			
+                    
+                    i=i+1;
+                    setCookie(file.name,i,365)
+
+                }
+                else {
+                    alert("未选择文件！");
+                    return false;
+                } // file == 0
+            } // 以上是 startUpload函数
+            //设置cookie
+            function setCookie(c_name,value,expiredays)
+            {
+                var exdate=new Date()
+                exdate.setDate(exdate.getDate()+expiredays)
+                document.cookie=c_name+ "=" +escape(value)+
+                ((expiredays==null) ? "" : ";expires="+exdate.toGMTString()+";path=/")
+            }
+            //获取cookie
+            function getCookie(c_name)
+            {
+                if (document.cookie.length>0) {
+                    c_start=document.cookie.indexOf(c_name + "=")
+                    if (c_start!=-1) {
+                        c_start=c_start + c_name.length+1 
+                        c_end=document.cookie.indexOf(";",c_start)
+                        if (c_end==-1) c_end=document.cookie.length
+                        return unescape(document.cookie.substring(c_start,c_end))
+                    } 
+                }
+                return ""
+            }
+            function stopup() {
+                if (stop == 1) {
+                    stop = 0;
+                    startUpload();
+                }
+                else {
+                    stop = 1;
+                    document.getElementById("play-pause").classList.remove("glyphicon-pause");
+                    document.getElementById("play-pause").classList.add("glyphicon-play");
+                }
+            }
+            function fileSelected() {
+                let file = document.getElementById("file-input").files[0];
+                if (file) {
+                    let filesize = 0;
+                    if (file.size > 1024 * 1024) {
+                        filesize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB'; 
+                    }
+                    else {
+                        filesize = (Math.round(file.size * 100 / 1024) / 100).toString() + "KB";
+                    }
+                    document.getElementById("selected-name").innerHTML = 
+                    "文件名：" + file.name;
+                    document.getElementById("selected-size").innerHTML = 
+                    "大小：" + filesize;
+                    document.getElementById("selected-type").innerHTML = 
+                    "类型：" + file.type;
+                    document.getElementById("selected-info").style.display = "block";
+                }
+            }
+            function clearall() {   // 重置按钮
+                document.getElementById("upload-progress").style.display = "none";  // 关闭上传进度
+                stop = 0;
+                document.getElementById("play-pause").classList.remove("glyphicon-play");   
+                document.getElementById("play-pause").classList.add("glyphicon-pause"); // 重置
+                document.getElementById("selected-info").style.display = "none";
+                document.getElementById("file-input").value = null;
+                document.getElementById("success-box").style.display = "none";
+            }
+            function goBack() {
+                window.history.go(-1);
+            }
+      //      $.ajaxSetup({
+        //      data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+          //  })
+        </script>
+    </head>
+
+    <body>
+        <div id="ad-container">
+            <div id="ad-item2">Secure NetDisk</div> 
+        </div>
+
+        <div id="form-container">
+            <form action="/upload/" method="POST" enctype="multipart/form-data">
+
+                <h3 class="form-title center-block">
+                    {{ user.name }} 的文件上传
+                </h3>
+                <hr style="width: 100%;"/>
+                <label for="file-input">
+                    选择文件进行上传
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                </label>
+                <input type="file" class="form-control" id="file-input" 
+                style="display: none;" onchange="fileSelected()" />
+                {% csrf_token %}
+                <button type="button" class="btn btn-success" id="upload-btn" onclick="startUpload()">
+                    确认
+                </button>
+
+            </form>
+
+            <div id="selected-info">
+                <hr />
+                <h3>您已选择——</h3>
+                <div id="selected-name"></div>
+                <div id="selected-size"></div>
+                <div id="selected-type"></div>
+            </div>
+        </div>  <!-- 以上是文件上传的表单，以及选择文件之后的信息  -->
+
+        <div id="status-container">
+            <p>
+                {{ user.name }} 的容量使用情况—— {{used}}/{{max}}Mb
+            </p>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width:{{spaceprecent}}">
+                  <span class="sr-only">{{spacepreceng}} Complete</span>
+                </div>
+            </div>
+            <hr />
+            
+            <div id="upload-progress">
+                <p>上传进度</p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active" id="upload-progress-bar" style="width: 0%;">
+                    </div>
+                </div>
+                <p id="progress-percent">
+                    0%
+                </p>
+                <div id="stop-cancel">
+                    <span class="glyphicon glyphicon-play" id="play-pause" onclick="stopup()"></span>
+                    &nbsp; &nbsp;
+                    <span class="glyphicon glyphicon-remove" onclick="clearall()"></span>
+                </div>
+                <hr />
+            </div>
+
+            <div id="success-box">
+                <h3>文件上传成功！</h3>
+                <span onclick="goBack()">返回上一级&nbsp;&nbsp;</span>
+                <span onclick="clearall()">继续上传</span>
+                {% if message %}
+                   {{message}}
+                {%  endif %}
+            </div>
+            
+        </div>
+    </body>
+</html>

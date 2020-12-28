@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8" />
+        <title> SecAlloc </title>
+        <link rel="icon" href="tag.jpg" sizes="32 * 32">
+
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <style>
+            body {
+                background-image: linear-gradient( 111.5deg,  rgba(228,247,255,1) 21.9%, rgba(255,216,194,1) 92.2% );
+            }
+            #ad-container {
+                top: 0;
+                height: 10%;
+                background-image: linear-gradient( 109.6deg,  rgba(156,252,248,1) 11.2%, rgba(110,123,251,1) 91.1% );
+            }
+            #ad-container > #ad-item2 {
+                font-family: HGHT1_CNKI, "华光行楷_CNKI", Helvetica, Arial, sans-serif;
+                font-size: xxx-large; 
+                margin-left: 10%;
+                font-weight: bolder;
+            }
+            #form-container {
+                position: absolute;
+                margin-top: 7%;
+                margin-left: 30%;
+                height: 50%;
+                width: 40%;
+                border-radius: 5%;
+                background-color:whitesmoke
+            }
+            #form-container > form {
+                width: 80%;
+                margin-left: 10%;
+                font-family: "隶书","华文新魏",  "楷体", "微软雅黑";
+            }
+            #form-container #mem-alloc {
+                width: 90%;
+            }
+            #form-container #input-addon {
+                position: absolute;
+                margin-top: -5.3%;
+                margin-left: 73%;
+                height: 8%;
+                width: 7%;
+                border-radius: 5%;
+                background-color: rgba(0, 0, 0, 0.3);
+                text-align: center;
+                font-size: larger;
+                font-family: Arial, Helvetica, sans-serif;
+                color: black;
+            }
+            #alloc-btn {
+                margin-left: 80%;
+                width: 20%;
+                margin-top: 8%;
+            }
+            #form-container > #back-link {
+                font-family: "华文新魏", "隶书", "楷体", "微软雅黑";
+                font-size: large;
+                margin-left: 75%;
+            }
+            #form-container #back-link:hover {
+                cursor: pointer;
+            }
+            #message-container {
+                position: absolute;
+                margin-top: 1%;
+                height: 10%;
+                width: 0%;
+                margin-left: 35%;
+                background-color: rgba(0, 0, 0, 0.5);
+                border-radius: 20px 20px;
+                text-align: center;
+                font-family: "隶书", "华文新魏", "楷体", "微软雅黑";
+                font-size: x-large;
+                color: orange;
+                transition: width .25s;
+            }
+            #usage-status {
+                position: absolute;
+                margin-left: 73%;
+                height: 50%;
+                width: 20%;
+                margin-top: 7%;
+                background-image: linear-gradient( 180.3deg,  rgba(214,224,255,1) 37.2%, rgba(254,168,168,1) 137.3% );
+                border-radius: 20px 20px;
+                text-align: center;
+                font-family: "华光行楷_CNKI", "楷体", "微软雅黑";
+                font-size: larger;
+                padding-top: 2%;
+            }
+            #usage-status .progress {
+                width: 80%;
+                margin-left: 10%;
+            }
+            #usage-status #mem-alloc-ability {
+                font-size: xx-large;
+                font-weight: bolder;
+                font-family: "方正舒体", "华文行楷", "仿宋", "楷体", "微软雅黑";
+            }
+        </style>
+
+        <script>
+            window.onload = function() {
+                let allocBtn = document.getElementById("alloc-btn");
+                let alloc = document.getElementById("mem-alloc");
+                let messageContainer = document.getElementById("message-container");
+                let messageText = document.getElementById("message-text");
+                
+                allocBtn.onclick = function() {
+                    if (alloc.value == null || alloc.value == "")
+                    {
+                        messageText.innerHTML = "请选择您要使用的积分数";
+                        messageContainer.style.width = "30%";
+                        alloc.focus();
+                        setTimeout(function() {
+                            messageContainer.style.width = "0%";
+                            messageText.innerHTML = "";
+                        } , 1500)
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            function abilityChange() {  // 每次alloc输入框发生改变，都修改剩余空间
+                let alloc = document.getElementById("mem-alloc");
+                let abilityText = document.getElementById("mem-alloc-ability");
+                // 要将以下的60替换成后端数据，即剩余可申请额度。
+                if (alloc.value == null || alloc.value == "")   // 自有变无，设为上限
+                {
+                    abilityText.innerHTML = ({{ user.point }})
+                    return false;
+                }
+                abilityText.innerHTML = ({{ user.point }} - parseInt(alloc.value) < 0) ? 0 :  ({{ user.point }} - parseInt(alloc.value));
+            }
+            function goBack() {
+                window.history.go(-1);
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="ad-container">
+            <div id="ad-item2">Secure NetDisk</div> 
+        </div>
+        <div id="message-container">
+            <dev id="message-text">
+            </dev>
+        </div>
+        <div id="form-container">
+            <form action="" method="GET" id="find-password">
+                <h3 class="form-title center-block">
+                    <span class="glyphicon glyphicon-cloud"></span>
+                    为 {{ request.session.user_name }}申请更多的存储空间
+                </h3>
+                <hr />
+                <div class="form-group">
+                    {% if message %}
+                       <div class="alert alert-warning">{{ message }}</div>
+                    {% endif %}
+                        <label for="mem-alloc">要兑换的积分数（一积分能换10MB）</label>
+                        <input type="number" class="form-control" placeholder="{{user.point}}"
+                        min="0" max="999"
+                        name="addspace" id="mem-alloc" onchange="abilityChange()"/>
+{#                        <span id="input-addon">积分</span>#}
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-info" id="alloc-btn">
+                        发起申请
+                    </button>
+                    <hr />
+                </div>
+            </form>    
+            <a id="back-link" onclick="goBack()">返回上一级</a>
+           <a id="back-link" href="/index/">返回主页面</a>
+        </div>
+
+        <div id="usage-status">
+            <p>容量使用情况</p>
+            <div class="progress">
+                <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"  style="width:{{spaceprecent}}" >
+                  <span class="sr-only">{{ spaceprecent }} Complete</span>
+                </div>
+            </div>
+            <span>{{ used }}/{{ max }}M</span>
+            <hr />
+
+            <div>
+                <p>剩余可用积分：</p>
+                <p id="mem-alloc-ability">{{ user.point }}</p>    <!-- 此处只允许有数字 -->
+            </div>
+        </div>
+    </body>
+</html>
